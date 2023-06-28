@@ -1,18 +1,14 @@
 import speech_recognition as sr
 import pyttsx3
 import webbrowser
-import requests
 from tkinter import *
 from pyowm import OWM
-from pyowm.utils import config
-from pyowm.utils import timestamps
 import kivy
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
-from geopy.geocoders import Nominatim
 
 kivy.require("1.11.1")
 
@@ -70,26 +66,10 @@ class VoiceAssistantApp(App):
 
         observation = mgr.weather_at_place(city)
         w = observation.weather
-
-        print(w.temperature('celsius'))
-
+        return w.temperature('celsius')
 
 
-    # def get_coordinates(city):
-    #     geolocator = Nominatim(user_agent="Eris")
-    #     location = geolocator.geocode(city)
-    #     if location:
-    #         return location.latitude, location.longitude
-    #     return None
-    #
-    # # Функция для получения погоды
-    # def get_weather(self, latitude, longitude):
-    #     api_key = '6e4ea426d43b67aa3ad2fe049a4ba7b4'
-    #     url = f"http://api.openweathermap.org/data/2.5/weather?lat={latitude}&lon={longitude}&appid={api_key}&units=metric"
-    #     response = requests.get(url)
-    #     data = response.json()
-    #     temperature = data['main']['temp']
-    #     self.speak(f"Температура в данном городе составляет {temperature} градусов по Цельсию.")
+
 
 # Функция выполнения команд
     def execute_command(self, command, coordinates=None):
@@ -101,13 +81,12 @@ class VoiceAssistantApp(App):
             self.speak("В каком городе вы хотите узнать погоду?")
             city = self.recognize_speech()
             coordinates = self.get_weather2(city)
-            # else:
-            #     self.speak("Не удалось определить координаты города. Пожалуйста, попробуйте еще раз.")
-            # if coordinates:
-            #     latitude, longitude = coordinates
-            #     self.get_weather(latitude, longitude)
-            # else:
-            #     self.speak("Извините, не удалось распознать город. Пожалуйста, попробуйте еще раз.")
+            if city:
+                self.speak(f'Погода в городе {city} {coordinates["temp"]} ')
+                print(f'Погода в городе {city} {round(coordinates["temp"])} ')
+            else:
+                self.speak("Не удалось определить координаты города. Пожалуйста, попробуйте еще раз.")
+
         if 'открой ютуб' in command:
             self.speak("Открываю YouTube")
             webbrowser.open("https://www.youtube.com/")
@@ -117,6 +96,7 @@ class VoiceAssistantApp(App):
 
 if __name__ == "__main__":
     VoiceAssistantApp().run()
+
 
 
 #Задача для кнопки
@@ -141,5 +121,4 @@ if __name__ == "__main__":
 #button=Button(window, image=butt, command=on_button_click)
 #button.place(x=0, y=0)
 #button.pack(pady=10)
-
 #window.mainloop()
